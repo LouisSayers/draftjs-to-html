@@ -1,18 +1,20 @@
 {
   "name": "draftjs-to-html",
-  "version": "0.9.1",
+  "version": "0.9.4",
   "description": "A library for draftjs to html conversion.",
   "main": "lib/draftjs-to-html.js",
+  "types": "types/draftjs-to-html.d.ts",
   "devDependencies": {
     "@babel/core": "^7.7.5",
     "@babel/preset-env": "^7.7.6",
     "@babel/preset-react": "^7.7.4",
     "@babel/register": "^7.7.4",
-    "babel-eslint": "^10.0.3",
+    "@size-limit/preset-small-lib": "^2.2.2",
     "autoprefixer": "^9.7.3",
+    "babel-eslint": "^10.0.3",
     "chai": "^4.2.0",
+    "draft-js": "^0.11.7",
     "enzyme": "^3.10.0",
-    "draft-js": "^0.11.3",
     "eslint": "^6.7.2",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.18.2",
@@ -22,17 +24,16 @@
     "jsdom": "^15.2.1",
     "mocha": "^6.2.2",
     "react": "^16.12.0",
+    "react-addons-test-utils": "^15.6.2",
     "react-dom": "^16.12.0",
     "rimraf": "^3.0.0",
     "rollup": "^1.27.9",
-    "react-addons-test-utils": "^15.6.2",
     "rollup-plugin-babel": "^4.3.3",
-    "sinon": "^7.5.0",
-    "@size-limit/preset-small-lib": "^2.2.2"
+    "sinon": "^7.5.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jpuri/draftjs-to-html.git"
+    "url": "https://github.com/LouisSayers/draftjs-to-html.git"
   },
   "scripts": {
     "size": "size-limit",
@@ -49,7 +50,7 @@
     {
       "path": "lib/*",
       "webpack": false,
-      "limit": "4.5 KB"
+      "limit": "5.5 KB"
     }
   ]
 }

@@ -2,17 +2,21 @@ import { assert } from 'chai';
 import { convertFromHTML, ContentState, convertToRaw } from 'draft-js';
 import draftToHtml from '../index';
 
+global.Node = {
+  TEXT_NODE: 3,
+};
+
 describe('draftToHtml test suite', () => {
   it('should return correct html', () => {
     const html = '<p>testing</p>\n';
     const arrContentBlocks = convertFromHTML(html);
     const contentState = ContentState.createFromBlockArray(arrContentBlocks);
-    const result = draftToHtml(convertToRaw(contentState));
+    const { html: result } = draftToHtml(convertToRaw(contentState));
     assert.equal(html, result);
   });
 
   it('should return empty string for undefined input', () => {
-    const result = draftToHtml(undefined);
+    const { html: result } = draftToHtml(undefined);
     assert.equal('', result);
   });
 
@@ -21,7 +25,7 @@ describe('draftToHtml test suite', () => {
     let output = '<ul>\n<li>1</li>\n<li>2</li>\n<li>3</li>\n</ul>\n';
     let arrContentBlocks = convertFromHTML(html);
     let contentState = ContentState.createFromBlockArray(arrContentBlocks);
-    let result = draftToHtml(convertToRaw(contentState));
+    let { html: result } = draftToHtml(convertToRaw(contentState));
     assert.equal(output, result);
 
     html = '<ol><li>1</li>\n<li>2</li>\n<li>3</li>\n</ol>\n';
@@ -29,14 +33,14 @@ describe('draftToHtml test suite', () => {
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(output, result);
+    assert.equal(output, result.html);
 
     html = '<ol><li>1</li>\n<ol><li>2</li>\n</ol>\n<li>3</li>\n</ol>\n';
     output = '<ol>\n<li>1</li>\n<ol>\n<li>2</li>\n</ol>\n<li>3</li>\n</ol>\n';
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(output, result);
+    assert.equal(output, result.html);
 
     html = '<ol><li>1</li>\n<ol><li>2</li>\n<li>3</li>\n</ol>\n<li>4</li>\n</ol>\n';
     output = '<ol>\n<li>1</li>\n<ol>\n<li>2</li>\n<li>'
@@ -44,7 +48,7 @@ describe('draftToHtml test suite', () => {
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(output, result);
+    assert.equal(output, result.html);
 
     html = '<ol><li>1</li>\n<ol><li>2</li>\n<ol><li>3</li>\n</ol>'
       + '\n</ol>\n<li>3</li>\n</ol>\n';
@@ -53,7 +57,7 @@ describe('draftToHtml test suite', () => {
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(output, result);
+    assert.equal(output, result.html);
   });
 
   it('should return correct result for inline styles color', () => {
@@ -62,21 +66,21 @@ describe('draftToHtml test suite', () => {
     let arrContentBlocks = convertFromHTML(html);
     let contentState = ContentState.createFromBlockArray(arrContentBlocks);
     let result = draftToHtml(convertToRaw(contentState));
-    assert.equal(output, result);
+    assert.equal(output, result.html);
 
     html = '<ol><li>1</li>\n<li>2</li>\n<li>3</li>\n</ol>\n';
     output = '<ol>\n<li>1</li>\n<li>2</li>\n<li>3</li>\n</ol>\n';
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(output, result);
+    assert.equal(output, result.html);
 
     html = '<ol><li>1</li>\n<ol><li>2</li>\n</ol>\n<li>3</li>\n</ol>\n';
     output = '<ol>\n<li>1</li>\n<ol>\n<li>2</li>\n</ol>\n<li>3</li>\n</ol>\n';
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(output, result);
+    assert.equal(output, result.html);
 
     html = '<ol><li>1</li>\n<ol><li>2</li>\n<li>3</li>\n</ol>\n<li>4</li>\n</ol>\n';
     output = '<ol>\n<li>1</li>\n<ol>\n<li>2</li>\n<li>3'
@@ -84,7 +88,7 @@ describe('draftToHtml test suite', () => {
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(output, result);
+    assert.equal(output, result.html);
 
     html = '<ol><li>1</li>\n<ol><li>2</li>\n<ol><li>3</li>\n</ol>'
       + '\n</ol>\n<li>3</li>\n</ol>\n';
@@ -93,7 +97,7 @@ describe('draftToHtml test suite', () => {
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(output, result);
+    assert.equal(output, result.html);
   });
 
   it('should return correct result for different heading styles', () => {
@@ -101,26 +105,26 @@ describe('draftToHtml test suite', () => {
     let arrContentBlocks = convertFromHTML(html);
     let contentState = ContentState.createFromBlockArray(arrContentBlocks);
     let result = draftToHtml(convertToRaw(contentState));
-    assert.equal(html, result);
+    assert.equal(html, result.html);
 
     html = '<h2>testing</h2>\n';
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(html, result);
+    assert.equal(html, result.html);
 
     html = '<blockquote>testing</blockquote>\n';
     arrContentBlocks = convertFromHTML(html);
     contentState = ContentState.createFromBlockArray(arrContentBlocks);
     result = draftToHtml(convertToRaw(contentState));
-    assert.equal(html, result);
+    assert.equal(html, result.html);
   });
 
   it('should return correct result when there are emojis', () => {
     const html = '<p><strong>👈</strong>👈</p>\n';
     const arrContentBlocks = convertFromHTML(html);
     const contentState = ContentState.createFromBlockArray(arrContentBlocks);
-    const result = draftToHtml(convertToRaw(contentState));
+    const { html: result } = draftToHtml(convertToRaw(contentState));
     assert.equal(html, result);
   });
 });

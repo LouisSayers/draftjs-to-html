@@ -25,6 +25,7 @@ export function getListMarkup(
   customEntityTransform,
 ) {
   const listHtml = [];
+  const cssClasses = new Set();
   let nestedListBlock = [];
   let previousBlock;
   listBlocks.forEach((block) => {
@@ -36,13 +37,15 @@ export function getListMarkup(
       listHtml.push(`<${getBlockTag(block.type)}>\n`);
     } else if (previousBlock.depth === block.depth) {
       if (nestedListBlock && nestedListBlock.length > 0) {
-        listHtml.push(getListMarkup(
+        const { html: nestedMarkup, classes } = getListMarkup(
           nestedListBlock,
           entityMap,
           hashtagConfig,
           directional,
           customEntityTransform,
-        ));
+        );
+        classes.forEach((klass) => cssClasses.add(klass));
+        listHtml.push(nestedMarkup);
         nestedListBlock = [];
       }
     } else {
@@ -70,14 +73,16 @@ export function getListMarkup(
     }
   });
   if (nestedListBlock && nestedListBlock.length > 0) {
-    listHtml.push(getListMarkup(
+    const { html: listMarkup, classes } = getListMarkup(
       nestedListBlock,
       entityMap,
       hashtagConfig,
       directional,
       customEntityTransform,
-    ));
+    );
+    classes.forEach((klass) => cssClasses.add(klass));
+    listHtml.push(listMarkup);
   }
   listHtml.push(`</${getBlockTag(previousBlock.type)}>\n`);
-  return listHtml.join('');
+  return { html: listHtml.join(''), classes: [...cssClasses] };
 }

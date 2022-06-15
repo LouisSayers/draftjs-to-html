@@ -53,11 +53,11 @@ function getHashtagRanges(blockText, hashtagConfig) {
       if (text[0] === trigger) {
         startIndex = 0;
         counter = 0;
-        text = text.substr(trigger.length);
+        text = text.substring(trigger.length);
       } else {
         startIndex = text.indexOf(separator + trigger);
         if (startIndex >= 0) {
-          text = text.substr(startIndex + (separator + trigger).length);
+          text = text.substring(startIndex + (separator + trigger).length);
           counter += startIndex + separator.length;
         }
       }
@@ -65,7 +65,7 @@ function getHashtagRanges(blockText, hashtagConfig) {
         const endIndex = text.indexOf(separator) >= 0
           ? text.indexOf(separator)
           : text.length;
-        const hashtag = text.substr(0, endIndex);
+        const hashtag = text.substring(0, endIndex);
         if (hashtag && hashtag.length > 0) {
           sections.push({
             offset: counter,
@@ -227,15 +227,12 @@ export function sameStyleAsPrevious(
   styles,
   index,
 ) {
-  let sameStyled = true;
-  if (index > 0 && index < inlineStyles.length) {
-    styles.forEach((style) => {
-      sameStyled = sameStyled && inlineStyles[style][index] === inlineStyles[style][index - 1];
-    });
-  } else {
-    sameStyled = false;
+  if (index === 0 || index >= inlineStyles.length) {
+    return false;
   }
-  return sameStyled;
+
+  const sameAsLastStyle = (style) => inlineStyles[style][index] === inlineStyles[style][index - 1];
+  return styles.every(sameAsLastStyle);
 }
 
 /**
@@ -498,6 +495,20 @@ export function getBlockInnerMarkup(
   return blockMarkup.join('');
 }
 
+function getBlockClasses(block) {
+  const { inlineStyleRanges } = block;
+  const classes = [];
+
+  for (let i = 0; i < inlineStyleRanges.length; i += 1) {
+    const { style } = inlineStyleRanges[i];
+    if (style === 'center' || style === 'right') {
+      classes.push(`align-text-${style}`);
+    }
+  }
+
+  return classes;
+}
+
 /**
 * Function will return html for the block.
 */
@@ -509,6 +520,8 @@ export function getBlockMarkup(
   customEntityTransform,
 ) {
   const blockHtml = [];
+  const cssClasses = new Set();
+
   if (isAtomicEntityBlock(block)) {
     blockHtml.push(getEntityMarkup(
       entityMap,
@@ -521,17 +534,27 @@ export function getBlockMarkup(
     if (blockTag) {
       blockHtml.push(`<${blockTag}`);
       const blockStyle = getBlockStyle(block.data);
+      const blockClasses = getBlockClasses(block);
+
       if (blockStyle) {
         blockHtml.push(` style="${blockStyle}"`);
       }
+
+      if (blockClasses.length > 0) {
+        blockHtml.push(` class="${blockClasses.join(' ')}"`);
+        blockClasses.forEach((klass) => cssClasses.add(klass));
+      }
+
       if (directional) {
         blockHtml.push(' dir = "auto"');
       }
+
       blockHtml.push('>');
       blockHtml.push(getBlockInnerMarkup(block, entityMap, hashtagConfig, customEntityTransform));
       blockHtml.push(`</${blockTag}>`);
     }
   }
+
   blockHtml.push('\n');
-  return blockHtml.join('');
+  return { html: blockHtml.join(''), classes: [...cssClasses] };
 }
